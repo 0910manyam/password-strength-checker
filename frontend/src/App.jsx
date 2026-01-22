@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Eye, EyeOff, Lock, CheckCircle, XCircle, AlertTriangle, Clock } from 'lucide-react';
+import { Shield, Eye, EyeOff, Lock, CheckCircle, XCircle, AlertTriangle, Clock, Download, X } from 'lucide-react';
 import './App.css';
 
 function App() {
@@ -7,6 +7,35 @@ function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
+  // PWA Install Prompt
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallPrompt(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    }
+    
+    setDeferredPrompt(null);
+    setShowInstallPrompt(false);
+  };
 
   // Debounce password checking
   useEffect(() => {
@@ -25,7 +54,9 @@ function App() {
   const checkPassword = async (pwd) => {
     setIsChecking(true);
     try {
-      const response = await fetch('http://localhost:5000/api/check-password', {
+      // Use environment variable or fallback to localhost
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/check-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,6 +142,33 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
+        {/* PWA Install Banner */}
+        {showInstallPrompt && (
+          <div className="mb-4 bg-purple-600 text-white rounded-lg p-4 flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-3">
+              <Download className="w-5 h-5" />
+              <div>
+                <p className="font-semibold">Install App</p>
+                <p className="text-sm text-purple-100">Add to your home screen for quick access</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleInstallClick}
+                className="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors"
+              >
+                Install
+              </button>
+              <button
+                onClick={() => setShowInstallPrompt(false)}
+                className="text-white hover:bg-purple-700 p-2 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">

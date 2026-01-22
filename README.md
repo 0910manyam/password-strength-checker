@@ -1,6 +1,6 @@
 # 🔒 Password Strength Checker
 
-A comprehensive cybersecurity project that analyzes password strength in real-time with a beautiful modern UI.
+A comprehensive cybersecurity project that analyzes password strength in real-time with a beautiful modern UI. **Now available as a Progressive Web App (PWA) - installable on iPhone!** 📱
 
 ## Features
 
@@ -34,6 +34,14 @@ A comprehensive cybersecurity project that analyzes password strength in real-ti
 - **Frontend**: React with Vite
 - **Styling**: TailwindCSS
 - **Icons**: Lucide React
+- **PWA**: Service Worker + Web Manifest (installable on mobile!)
+
+### 📱 Mobile App (PWA)
+- **Installable on iPhone** - Add to home screen
+- **Offline support** - Works without internet
+- **Native feel** - Full screen, no browser UI
+- **Fast loading** - Cached resources
+- See [PWA_SETUP.md](PWA_SETUP.md) for installation guide
 
 ## Installation & Setup
 
